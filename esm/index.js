@@ -16,9 +16,15 @@ export const define = Class => {
   const place = ($, a, b) => a ? `</${tagName}>` : `<${tagName} is="${is}"${b}`;
   transform(markup => markup.replace(re, place));
   const wrap = (self, type) => (...args) => render(self, () => type(...args));
-  Object.defineProperties(
+
+  // enrich the class and its prototype
+  const selector = {value: `${tagName}[is="${is}"]`};
+  const {defineProperties} = Object;
+  defineProperties(Class, {selector});
+  defineProperties(
     Class.prototype,
     {
+      selector,
       html: {
         get() {
           return wrap(this, html);
